@@ -1,2 +1,3 @@
-# alterra-agmc
-Advance Golang Mini Course
+# Advance Golang Mini Course
+by Alterra
+
