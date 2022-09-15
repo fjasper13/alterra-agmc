@@ -3,6 +3,7 @@ package routes
 import (
 	"day-3/constants"
 	"day-3/controllers"
+	// m "day-3/middlewares"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo"
@@ -35,6 +36,7 @@ func New() *echo.Echo {
 	v1.POST("/users", controllers.CreateUserController)
 
 	// Authenticated
+	// v1.Use(mEcho.BasicAuth(m.BasicAuthDB))
 	v1.Use(middleware.JWT([]byte(constants.SECRET_JWT)))
 
 	// User
