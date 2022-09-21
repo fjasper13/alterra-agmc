@@ -25,8 +25,9 @@ func main() {
 	database.InitDB()
 
 	f := factory.NewFactory()
+	fMongo := factory.NewFactoryMongo()
 	e := echo.New()
-	http.NewHttp(e, f)
+	http.NewHttp(e, f, fMongo)
 	m.LogMiddleware(e)
 
 	e.Logger.Fatal(e.Start("localhost:8000"))

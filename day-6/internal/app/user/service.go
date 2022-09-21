@@ -4,7 +4,7 @@ import (
 	"context"
 	"day-6/internal/factory"
 	"day-6/internal/models"
-	"day-6/repository"
+	"day-6/internal/repository"
 )
 
 type service struct {

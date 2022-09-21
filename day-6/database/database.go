@@ -4,6 +4,7 @@ import (
 	migration "day-6/database/migration"
 	"os"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
@@ -21,8 +22,8 @@ func InitDB() {
 	mysql := mysqlConfig{dbConfig: conf}
 
 	mysql.Connect()
-
 	migration.InitMigrate(DB)
+
 }
 
 func GetConnection() *gorm.DB {
@@ -30,4 +31,24 @@ func GetConnection() *gorm.DB {
 		InitDB()
 	}
 	return DB
+}
+
+func InitDBMongo() *mongo.Client {
+	confMongo := dbConfig{
+		User: os.Getenv("DB_USERMONGO"),
+		Pass: os.Getenv("DB_PASSMONGO"),
+		Host: os.Getenv("DB_HOSTMONGO"),
+		Port: os.Getenv("DB_PORTMONGO"),
+		Name: os.Getenv("DB_NAMEMONGO"),
+	}
+
+	mongo := mongoConfig{dbConfig: confMongo}
+	client := mongo.ConnectMongo()
+	return client
+}
+
+func GetConnectionMongo() *mongo.Client {
+	client := InitDBMongo()
+
+	return client
 }
