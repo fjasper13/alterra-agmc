@@ -18,25 +18,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: '>=1.18.0'
-      - name: create env file
-        env:
-          PORT: ${{ secrets.PORT }} 
-          SECRET_JWT: ${{ secrets.SECRET_JWT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-        run: |
-          touch .env
-          echo PORT=$PORT >> .env
-          echo DB_USER=$DB_USER >> .env
-          echo DB_PASS=$DB_PASS >> .env
-          echo DB_HOST=$DB_HOST >> .env
-          echo DB_PORT=$DB_PORT >> .env
-          echo DB_NAME=$DB_NAME >> .env
-          echo SECRET_JWT=$SECRET_JWT >> .env
-
+      #env create diskip karena env sudah diset di heroku.
       - name: login to docker hub
         uses: docker/login-action@v1
         with:
