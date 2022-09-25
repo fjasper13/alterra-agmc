@@ -1,49 +1,52 @@
-name: CI
+name: CI/CD
 
+# Trigger deployment only on push to master branch
 on:
   push:
-    branches: [ "main" ]
-
+    branches:
+      - main
+defaults:
+  run:
+    working-directory: ./day-10   
 jobs:
-
-  build:
+  build-docker:
+    name: "Build Docker Container"
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: setup GO
+        uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
+      #env create diskip karena env sudah diset di heroku.
+      - name: login to docker hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }} 
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      
+      - name: build docker container
+        run: docker build -t fjasper13/alterra-agmc-day-10:latest .
+      
+      - name: push docker container
+        run: docker push fjasper13/alterra-agmc-day-10:latest
 
-    - name: CI/CD To heroku.
-      uses: gonuit/heroku-docker-deploy@v1.3.3
-      with:
-          # Below you must provide variables for your Heroku app.
-
-          # The email address associated with your Heroku account.
-          # If you don't want to use repository secrets (which is recommended) you can do:
-          # email: my.email@example.com
-          email: ${{ secrets.HEROKU_EMAIL }}
-          
-          # Heroku API key associated with provided user's email.
-          # Api Key is available under your Heroku account settings.
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          
-          # Name of the heroku application to which the build is to be sent.
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-
-          # (Optional, default: "./")
-          # Dockerfile directory.
-          # For example, if you have a Dockerfile in the root of your project, leave it as follows:
-          dockerfile_directory: ./
-
-          # (Optional, default: "Dockerfile")
-          # Dockerfile name.
-          dockerfile_name: Dockerfile
-
-          # (Optional, default: "")
-          # Additional options of docker build command.
-          docker_options: "--no-cache"
-
-          # (Optional, default: "web")
-          # Select the process type for which you want the docker container to be uploaded.
-          # By default, this argument is set to "web".
-          # For more information look at https://devcenter.heroku.com/articles/process-model
-          process_type: web
+  deploy:
+    name: Deploy to Heroku on main branch push
+    runs-on: ubuntu-latest
+    needs: build-docker
+    steps:
+      - name: Checkout the files
+        uses: actions/checkout@v2
+      - name: Login to Heroku Container registry
+        env: 
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login 
+      - name: Build and push
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web 
+      - name: Release
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web 
