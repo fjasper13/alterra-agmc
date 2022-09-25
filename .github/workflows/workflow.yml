@@ -26,10 +26,10 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       
       - name: build docker container
-        run: docker build -t fjasper13/alterra-agmc-day-8:latest .
+        run: docker build -t fjasper13/alterra-agmc-day-10:latest .
       
       - name: push docker container
-        run: docker push fjasper13/alterra-agmc-day-8:latest
+        run: docker push fjasper13/alterra-agmc-day-10:latest
 
   deploy:
     name: Deploy to Heroku on main branch push
